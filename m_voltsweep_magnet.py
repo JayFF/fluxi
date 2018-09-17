@@ -185,22 +185,21 @@ class MeasureVoltSweepMagnet(MeasureBase):
                     if self.gui.B("Voltage sweep/Preramp").v==True:
                         self.fastramp(self.preramp, self.preramp_pause)
 # Hier weitermachen Jonathan
-            if self.gui.B("Voltage sweep/Preramp").v==True:
-                self.fastramp(self.preramp, self.preramp_pause)
-        if self.gui.B("Voltage sweep/Scanning").v:
-            if self.next<len(self.ramp):
-                self.yolo.ramp_to_voltage(self.voltage_ramp[int(self.next)])
-                self.gui.D("Voltage sweep/Current Voltage").v=self.voltage_ramp[int(self.next)]
-                self.next+=1
-                do_repeat=True
+               if self.next<len(self.ramp):
+                   self.yolo.ramp_to_voltage(self.voltage_ramp[int(self.next)])
+                   self.gui.D("Voltage sweep/Current Voltage").v=self.voltage_ramp[int(self.next)]
+                   self.next+=1
+                   self.voltage_ready = False
+               else:
+                   self.voltage_ready = True
+                   #self.gui.D("Steps/Current Voltage").v=self.maxim
+                   self.gui.Im("Last").setImage(np.array(self.ac).T)
+                   self.recordpoint()
+                   self.next=0
+            if self.magnetic_field_done and self.voltage_ready and self.polarization_ready:
+                self.scanning.v = False
+                do_repeat = False
 
-            else:
-                do_repeat=False
-                self.gui.B("Voltage sweep/Scanning").v=False
-                #self.gui.D("Steps/Current Voltage").v=self.maxim
-                self.gui.Im("Last").setImage(np.array(self.ac).T)
-                self.recordpoint()
-                
         return do_repeat
         
              
